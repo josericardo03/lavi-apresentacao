@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,19 +8,19 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  password String   // Propositalmente sem hash para demonstrar vulnerabilidade
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
   name     String
+  role     String @default("user")
   posts    Post[]
-  role     String   @default("user") // Para demonstrar vulnerabilidade de autorização
 }
 
 model Post {
   id        Int      @id @default(autoincrement())
   title     String
-  content   String   // Vulnerável a XSS
+  content   String
   authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
 }

@@ -38,4 +38,16 @@ export async function POST(request: Request) {
   }
 }
 
+export async function DELETE() {
+  try {
+    // Deleta todos os posts para resetar a demonstração
+    await prisma.post.deleteMany({});
 
+    return NextResponse.json({ message: "Todos os posts foram deletados" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Erro ao deletar posts" },
+      { status: 500 }
+    );
+  }
+}
