@@ -59,13 +59,17 @@ export default function Posts() {
       if (
         newPost.content.includes("<script>") ||
         newPost.content.includes("onerror=") ||
-        newPost.content.includes("onclick=")
+        newPost.content.includes("onclick=") ||
+        newPost.content.includes("onmouseover=") ||
+        newPost.content.includes("onmouseout=")
       ) {
         // Simula execução de XSS para demonstração
         setTimeout(() => {
           if (
             newPost.content.includes("XSS") ||
-            newPost.content.includes("alert")
+            newPost.content.includes("alert") ||
+            newPost.content.includes("redirecionamento") ||
+            newPost.content.includes("mudança")
           ) {
             alert(
               "🚨 XSS EXECUTADO! Este é um exemplo educacional de como o XSS funciona!"
@@ -144,7 +148,7 @@ export default function Posts() {
       id: "style-change",
       name: "🎨 Mudança de Estilo",
       title: "XSS com Mudança Visual",
-      code: `<div onmouseover="this.style.backgroundColor='red'; alert('Página comprometida!')" style="background: yellow; padding: 20px; border: 2px solid black; cursor: pointer;">Passe o mouse aqui para ver a mudança de cor e o alerta!</div>`,
+      code: `<div onmouseover="this.style.backgroundColor='red'; this.style.color='white'; alert('🎨 Página comprometida! Cores alteradas via XSS!')" onmouseout="this.style.backgroundColor='yellow'; this.style.color='black';" style="background: yellow; padding: 20px; border: 2px solid black; cursor: pointer; transition: all 0.3s;">Passe o mouse aqui para ver a mudança de cor e o alerta!</div>`,
       description: "Altera a aparência da página e executa código malicioso",
       difficulty: "Iniciante",
       impact: "Médio - modifica a interface",
@@ -153,7 +157,7 @@ export default function Posts() {
       id: "image-xss",
       name: "🖼️ XSS via Imagem",
       title: "XSS com Imagem",
-      code: `<img src="x" onerror="alert('🚨 XSS via Imagem! Este é um exemplo educacional!')">`,
+      code: `<img src="imagem-inexistente.jpg" onerror="alert('🖼️ XSS via Imagem! Bypass de filtros básicos!'); document.body.style.border='5px solid red';" style="width: 200px; height: 100px; border: 2px dashed #ccc; display: block; margin: 10px 0;"><p style="color: red; font-weight: bold;">Esta imagem não existe, mas executou XSS!</p>`,
       description:
         "Usa o evento onerror de uma imagem para executar JavaScript",
       difficulty: "Intermediário",
@@ -163,8 +167,8 @@ export default function Posts() {
       id: "redirect",
       name: "🔄 Redirecionamento",
       title: "XSS com Redirecionamento",
-      code: `<script>setTimeout(() => window.location.href = 'https://google.com', 2000)</script>`,
-      description: "Redireciona o usuário para outro site após 2 segundos",
+      code: `<div onclick="alert('🔄 Redirecionamento XSS! Você será redirecionado em 3 segundos...'); setTimeout(() => { if(confirm('Deseja continuar para o Google? (Este é um exemplo educacional)')) { window.open('https://google.com', '_blank'); } }, 3000);" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; padding: 20px; border-radius: 10px; cursor: pointer; text-align: center; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">🔄 Clique aqui para ver o redirecionamento XSS!</div>`,
+      description: "Redireciona o usuário para outro site após confirmação",
       difficulty: "Intermediário",
       impact: "Alto - pode levar a phishing",
     },
@@ -458,20 +462,46 @@ document.body.innerHTML += '<div style="background:red;color:white;padding:20px;
             🚀 Teste Rápido de XSS
           </h3>
           <p className="text-green-700 text-center mb-4">
-            Clique no botão abaixo para testar se o XSS está funcionando:
+            Teste os 3 tipos principais de XSS:
           </p>
-          <div className="text-center">
+          <div className="grid md:grid-cols-3 gap-4">
             <button
               onClick={() => {
                 setNewPost({
-                  title: "Teste de XSS",
-                  content: `<img src="x" onerror="alert('🚨 XSS FUNCIONANDO! Este é um teste educacional!')" style="display: none;"><div style="background: yellow; padding: 10px; border: 2px solid red; margin: 10px 0;">XSS Testado com Sucesso! (O alerta deve aparecer automaticamente)</div>`,
+                  title: "Teste - Mudança de Estilo",
+                  content: `<div onmouseover="this.style.backgroundColor='red'; this.style.color='white'; alert('🎨 XSS Mudança de Estilo!')" onmouseout="this.style.backgroundColor='yellow'; this.style.color='black';" style="background: yellow; padding: 20px; border: 2px solid black; cursor: pointer;">Passe o mouse aqui!</div>`,
                 });
-                setSelectedExample("test");
+                setSelectedExample("test-style");
               }}
-              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
             >
-              🧪 Testar XSS Agora
+              🎨 Teste Mudança de Estilo
+            </button>
+
+            <button
+              onClick={() => {
+                setNewPost({
+                  title: "Teste - XSS via Imagem",
+                  content: `<img src="imagem-inexistente.jpg" onerror="alert('🖼️ XSS via Imagem!'); document.body.style.border='5px solid red';" style="width: 200px; height: 100px; border: 2px dashed #ccc; display: block; margin: 10px 0;"><p style="color: red; font-weight: bold;">Imagem com erro executou XSS!</p>`,
+                });
+                setSelectedExample("test-image");
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              🖼️ Teste XSS via Imagem
+            </button>
+
+            <button
+              onClick={() => {
+                setNewPost({
+                  title: "Teste - Redirecionamento",
+                  content: `<div onclick="alert('🔄 XSS Redirecionamento!'); setTimeout(() => { if(confirm('Continuar para Google? (Exemplo educacional)')) { window.open('https://google.com', '_blank'); } }, 2000);" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); color: white; padding: 20px; border-radius: 10px; cursor: pointer; text-align: center; font-weight: bold;">Clique para redirecionamento XSS!</div>`,
+                });
+                setSelectedExample("test-redirect");
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              🔄 Teste Redirecionamento
             </button>
           </div>
         </div>
