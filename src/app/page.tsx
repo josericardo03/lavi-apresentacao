@@ -3,9 +3,18 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main className="min-h-screen p-8">
-      <h1 className="text-4xl font-bold mb-8">
-        Demonstração de Vulnerabilidades Web
-      </h1>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-4">
+          Demonstração de Vulnerabilidades Web
+        </h1>
+        <Link
+          href="/ataques"
+          className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          <span>🛡️</span>
+          <span>Ver Demonstração Didática</span>
+        </Link>
+      </div>
 
       <div className="space-y-6">
         <section className="border p-6 rounded-lg">
